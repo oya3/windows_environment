@@ -1,0 +1,4 @@
+*.xls	diff=astextplain
+*.XLS	diff=astextplain
+*.xlsx	diff=astextplain
+*.XLSX	diff=astextplain
