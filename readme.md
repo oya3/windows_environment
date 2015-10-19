@@ -2,7 +2,6 @@
 
 ※cドライブ直下に bash_home, tools ディレクトリを作成することが必須条件
 
-
 1. bash_home を cドライブ直下に配置
 >$ mv bash_home c:\bash_home
 
