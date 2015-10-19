@@ -1,5 +1,8 @@
 # 設置方法
 
+※cドライブ直下に bash_home, tools ディレクトリを作成することが必須条件
+
+
 1. bash_home を cドライブ直下に配置
 >$ mv bash_home c:\bash_home
 
@@ -14,13 +17,15 @@ user.name, user.email を自分の名称に変更
 1. tools フォルダを cドライブ直下に配置
 >$ mkdir c:\tools
 
-1. c:\tools フォルダに emacs 配置(IMEパッチ版
+1. c:\tools フォルダに emacs, portablegit を配置する
 
     1. emacs 非公式 IMEパッチ適用済み64bit版    
-    https://github.com/chuntaro/NTEmacs64    
+    https://github.com/chuntaro/NTEmacs64  
+    $ mkdir c:\tools\emacs   
 
-    1. portable git    
+    1. portablegit  
     https://github.com/msysgit/msysgit/releases/tag/Git-1.9.5-preview20150319   
+    $ mkdir :\tools\portablegit   
     ※今現在、管理は git for windows に移管されているが、とりあえず旧バージョンを使用。  
     本来は、https://git-for-windows.github.io/ から取得するべきと思われる。  
     また、git for windows版は、chocolatey ではインストールできない。  
