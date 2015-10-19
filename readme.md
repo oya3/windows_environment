@@ -44,7 +44,7 @@ tools_settings/packages.config を参考に chocolatey でインストールで�
     ```ruby
     $ @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
     ```
-    1. packages.config ファイルを作成後、以下のコマンドでインストールが開始される。  
+    1. packages.config ファイルを作成後、以下のコマンドでインストールが開始される。
     ```ruby
     $ cinst packages.config  
     ```
