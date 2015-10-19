@@ -13,10 +13,10 @@
 1. c:\bash_home の .gitconfig を編集  
 user.name, user.email を自分の名称に変更
 
-1. tools フォルダを cドライブ直下に配置
+1. tools フォルダを cドライブ直下に配置  
 >$ mkdir c:\tools
 
-1. c:\tools フォルダに emacs, portablegit を配置する
+1. c:\tools フォルダに emacs, portablegit を配置する  
 
     1. emacs 非公式 IMEパッチ適用済み64bit版    
     $ mkdir c:\tools\emacs   
@@ -30,7 +30,7 @@ user.name, user.email を自分の名称に変更
     また、git for windows版は、chocolatey ではインストールできない。  
     よって、新旧に対応できるよう今現在は c:\toolsフォルダ に配置するよう設計している。  
 
-1. その他、必要なツールをインストール
+1. その他、必要なツールをインストール  
 tools_settings/packages.config を参考に chocolatey でインストールできるものはインストールするべき。  
 ※emacs は IMEパッチ版がインストールされないので注意。  
 ※portablegitは、git for windows 版はインストールできない  
@@ -40,7 +40,7 @@ tools_settings/packages.config を参考に chocolatey でインストールで�
 　・ 7zip  
 　・ qttabbar（設定は別途必要）  
 　・ google-chrome-x64  
-    1. chocolatey のインストールは管理者権限で以下を実施すること。
+    1. chocolatey のインストールは管理者権限で以下を実施すること。  
     ```ruby
     $ @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
     ```
