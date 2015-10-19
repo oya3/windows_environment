@@ -1,12 +1,12 @@
-## 設置方法
+# 設置方法
 
 1. bash_home を cドライブ直下に配置
 >$ mv bash_home c:\bash_home
 
 1. 環境変数を登録
->$ set ALTERNATE_EDITOR=C:\tools\emacs\bin\runemacs.exe
->$ set EMACS_SERVER_FILE=C:\bash_home\.emacs.d\server\main_server
->$ set HOME=C:\bash_home
+>$ set ALTERNATE_EDITOR=C:\tools\emacs\bin\runemacs.exe  
+>$ set EMACS_SERVER_FILE=C:\bash_home\.emacs.d\server\main_server  
+>$ set HOME=C:\bash_home  
 
 1. c:\bash_home の .gitconfig を編集
 user.name, user.email を自分の名称に変更
@@ -27,19 +27,20 @@ user.name, user.email を自分の名称に変更
     よって、新旧に対応できるよう今現在は c:\toolsフォルダ に配置するよう設計している。  
 
 1. その他、必要なツールをインストール
-tools_settings/packages.config を参考に chocolatey でインストールできるものはインストールするべき。
-※emacs は IMEパッチ版がインストールされないので注意。
-※portablegitは、git for windows 版はインストールできない
-※おすすめは以下の通り
-　・ winmerge-jp（プラグインは別途インストールが必要)
-　・ conemu
-　・ 7zip
-　・ qttabbar（設定は別途必要）
-　・ google-chrome-x64
+tools_settings/packages.config を参考に chocolatey でインストールできるものはインストールするべき。  
+※emacs は IMEパッチ版がインストールされないので注意。  
+※portablegitは、git for windows 版はインストールできない  
+※おすすめは以下の通り  
+　・ winmerge-jp（プラグインは別途インストールが必要)  
+　・ conemu  
+　・ 7zip  
+　・ qttabbar（設定は別途必要）  
+　・ google-chrome-x64  
     1. chocolatey のインストールは管理者権限で以下を実施すること。  
-        >$ @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
+        >$ @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin  
     1. packages.config ファイルを作成後、以下のコマンドでインストールが開始される。  
         >$ cinst packages.config
+        
 
 
 
