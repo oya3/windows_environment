@@ -19,12 +19,12 @@ user.name, user.email を自分の名称に変更
 1. c:\tools フォルダに emacs, portablegit を配置する
 
     1. emacs 非公式 IMEパッチ適用済み64bit版    
-    https://github.com/chuntaro/NTEmacs64  
     $ mkdir c:\tools\emacs   
+    https://github.com/chuntaro/NTEmacs64  
 
     1. portablegit  
-    https://github.com/msysgit/msysgit/releases/tag/Git-1.9.5-preview20150319   
     $ mkdir :\tools\portablegit   
+    https://github.com/msysgit/msysgit/releases/tag/Git-1.9.5-preview20150319   
     ※今現在、管理は git for windows に移管されているが、とりあえず旧バージョンを使用。  
     本来は、https://git-for-windows.github.io/ から取得するべきと思われる。  
     また、git for windows版は、chocolatey ではインストールできない。  
