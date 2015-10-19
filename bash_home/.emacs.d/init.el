@@ -611,6 +611,7 @@ mouse-3: delete other windows"
 (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
 ;; TABで補完（bashの補完の動作と違う... 候補が表示されたら↑↓で選択するらしい。 magit-status を補完検索するなら [git status] のようにすれば最短で検索可能かも？？？）
 (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+(define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
 
 ;; w32-ime-buffer-switch-p を t にして helm を利用する場合に、ミニバッファで漢字を正常に
 ;; 使えるようにする対策（この設定がないと、ime が勝手に切り替わったりする）
@@ -619,6 +620,7 @@ mouse-3: delete other windows"
             :around (lambda (orig-fun &rest args)
                       (let ((select-window-functions nil))
                         (apply orig-fun args))))
+
 
 ;; helm-swoop は migemo もあわせて利用するのがいいらしいが、日本語入力を手間だと思っていないので migemo は捨てる。
 ;; 参考 : http://rubikitch.com/2014/12/25/helm-swoop/
@@ -914,6 +916,11 @@ mouse-3: delete other windows"
 (require 'visual-basic-mode)
 (setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|rvb\\)$" .
                                  visual-basic-mode)) auto-mode-alist))
+
+;;------------------------------------------------------------------------------
+;; realtime-preview (markdownをリアルタイムでプレビュー表示)
+(require 'realtime-preview)
+
 
 ;;------------------------------------------------------------------------------
 ;; javascript
