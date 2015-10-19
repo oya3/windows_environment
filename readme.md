@@ -36,12 +36,14 @@ tools_settings/packages.config を参考に chocolatey でインストールで�
 　・ 7zip  
 　・ qttabbar（設定は別途必要）  
 　・ google-chrome-x64  
-    1. chocolatey のインストールは管理者権限で以下を実施すること。  
-        >$ @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin  
+    1. chocolatey のインストールは管理者権限で以下を実施すること。
+    ```ruby
+    $ @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
+    ```
     1. packages.config ファイルを作成後、以下のコマンドでインストールが開始される。  
-        >$ cinst packages.config
-        
-
+    ```ruby
+    $ cinst packages.config  
+    ```
 
 
 
