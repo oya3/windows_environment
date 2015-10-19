@@ -10,7 +10,7 @@
 >$ set EMACS_SERVER_FILE=C:\bash_home\.emacs.d\server\main_server  
 >$ set HOME=C:\bash_home  
 
-1. c:\bash_home の .gitconfig を編集
+1. c:\bash_home の .gitconfig を編集  
 user.name, user.email を自分の名称に変更
 
 1. tools フォルダを cドライブ直下に配置
