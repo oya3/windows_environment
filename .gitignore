@@ -4,4 +4,7 @@
 \.\#*
 
 realtime-preview-result.html
+*/.emacs.d/.emacs.desktop*
+*/.emacs.d/.framesize.el
+*/.emacs.d/server/*
 

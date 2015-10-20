@@ -612,6 +612,10 @@ mouse-3: delete other windows"
 ;; TABで補完（bashの補完の動作と違う... 候補が表示されたら↑↓で選択するらしい。 magit-status を補完検索するなら [git status] のようにすれば最短で検索可能かも？？？）
 (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
 (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
+;; M-x 時のコマンドの並び順を入力した文字別に変更
+(define-key global-map (kbd "M-x")     'helm-M-x)
+;; C-x f(C-x C-f) 時のコマンドの並び順を入力した文字別に変更
+(define-key global-map (kbd "C-x C-f") 'helm-find-files)
 
 ;; w32-ime-buffer-switch-p を t にして helm を利用する場合に、ミニバッファで漢字を正常に
 ;; 使えるようにする対策（この設定がないと、ime が勝手に切り替わったりする）
