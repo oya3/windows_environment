@@ -185,6 +185,9 @@
 ;; 起動メッセージを表示しない
 (setq inhibit-startup-message t)
 
+;; *scratch* buffer のメッセージを消す。
+(setq initial-scratch-message t)
+
 ;; ツールバーを非表示
 (tool-bar-mode 0)
 
@@ -248,8 +251,6 @@
 ;; (use popwin-el devloper ver.)
 ;; https://github.com/m2ym/direx-el
 ;; (require 'direx)
-(require 'popwin)
-(setq display-buffer-function 'popwin:display-buffer)
 
 (require 'direx)
 (setq direx:leaf-icon "  "
@@ -258,8 +259,6 @@
 ;; (setq direx:leaf-icon "  "
 ;;       direx:open-icon "\&#9662; "
 ;;       direx:closed-icon "&#9654; ")
-(push '(direx:direx-mode :position left :width 50 :dedicated t)
-      popwin:special-display-config)
 (global-set-key [f5] 'direx:jump-to-directory-other-window)
 (global-set-key [f6] 'direx-project:jump-to-project-root-other-window)
 (global-set-key [f7] 'direx:find-directory)
@@ -425,9 +424,9 @@ mouse-3: delete other windows"
 ;; バックスペース
 (global-set-key "\C-h" 'delete-backward-char)
 
-;; バッファーリスト表示
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-    (autoload 'ibuffer "ibuffer" "List buffers." t)
+;; ;; バッファーリスト表示
+;; (global-set-key (kbd "C-x C-b") 'ibuffer)
+;;     (autoload 'ibuffer "ibuffer" "List buffers." t)
 (global-set-key [f2] 'ibuffer)
 
 ;; ホイールスクロール設定　１秒３行かな。。。
@@ -600,22 +599,82 @@ mouse-3: delete other windows"
 ;; anything やめて helm に変更
 ;; (require 'anything)
 ;; (require 'anything-match-plugin)
-
+;;
 ;; helm 便利かも。りあえず使用して様子見る(2015/10/06)
-;; 参考 : https://www.naney.org/diki/d/2014-12-03-Emacs-helm.html
+;; 参考 :
+;;     https://www.naney.org/diki/d/2014-12-03-Emacs-helm.html
+;;     http://d.hatena.ne.jp/a_bicky/20140104/1388822688
+;; 
 ;; (require 'helm)
 ;; helm-config を require しなと動作しないらしい。
-(require 'helm-config)
-(helm-mode 1)
-;; カーソル以降の１行削除/
-(define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
-;; TABで補完（bashの補完の動作と違う... 候補が表示されたら↑↓で選択するらしい。 magit-status を補完検索するなら [git status] のようにすれば最短で検索可能かも？？？）
-(define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
-(define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
-;; M-x 時のコマンドの並び順を入力した文字別に変更
-(define-key global-map (kbd "M-x")     'helm-M-x)
-;; C-x f(C-x C-f) 時のコマンドの並び順を入力した文字別に変更
-(define-key global-map (kbd "C-x C-f") 'helm-find-files)
+(when (require 'helm-config nil t)
+  (helm-mode 1)
+
+  (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil))
+  (add-to-list 'helm-completing-read-handlers-alist '(write-file . nil))
+  (define-key global-map (kbd "M-x")     'helm-M-x)
+  ;; (define-key global-map (kbd "C-x C-f") 'helm-find-files)
+  ;; (define-key global-map (kbd "C-x C-r") 'helm-recentf)
+  (define-key global-map (kbd "M-y")     'helm-show-kill-ring)
+  (define-key global-map (kbd "C-c i")   'helm-imenu)
+  (define-key global-map (kbd "C-x b")   'helm-buffers-list)
+  ;; (global-set-key [f2] 'helm-buffers-list)
+
+  (define-key helm-map (kbd "C-h") 'delete-backward-char)
+  (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
+  (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
+  (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+
+  ;; (setq helm-samewindow nil)
+  ;; (setq popwin:special-display-config '(
+  ;;                                       ("helm" :regexp t)
+  ;;                                       ))
+  
+  ;; Disable helm in some functions
+  (add-to-list 'helm-completing-read-handlers-alist '(find-alternate-file . nil))
+
+  ;; Emulate `kill-line' in helm minibuffer
+  (setq helm-delete-minibuffer-contents-from-point t)
+  (defadvice helm-delete-minibuffer-contents (before helm-emulate-kill-line activate)
+    "Emulate `kill-line' in helm minibuffer"
+    (kill-new (buffer-substring (point) (field-end))))
+
+  (defadvice helm-ff-kill-or-find-buffer-fname (around execute-only-if-exist activate)
+    "Execute command only if CANDIDATE exists"
+    (when (file-exists-p candidate)
+      ad-do-it))
+
+  (defadvice helm-ff-transform-fname-for-completion (around my-transform activate)
+    "Transform the pattern to reflect my intention"
+    (let* ((pattern (ad-get-arg 0))
+           (input-pattern (file-name-nondirectory pattern))
+           (dirname (file-name-directory pattern)))
+      (setq input-pattern (replace-regexp-in-string "\\." "\\\\." input-pattern))
+      (setq ad-return-value
+            (concat dirname
+                    (if (string-match "^\\^" input-pattern)
+                        ;; '^' is a pattern for basename
+                        ;; and not required because the directory name is prepended
+                        (substring input-pattern 1)
+                      (concat ".*" input-pattern)))))))
+
+;; --- old start ---
+;; (require 'helm-config)
+;; (helm-mode 1)
+;; ;; カーソル以降の１行削除/
+;; (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
+;; ;; TABで補完（bashの補完の動作と違う... 候補が表示されたら↑↓で選択するらしい。 magit-status を補完検索するなら [git status] のようにすれば最短で検索可能かも？？？）
+;; (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+;; (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
+;; ;; M-x 時のコマンドの並び順を入力した文字別に変更
+;; (define-key global-map (kbd "M-x")     'helm-M-x)
+;; ;; C-x f(C-x C-f) 時のコマンドの並び順を入力した文字別に変更
+;; (define-key global-map (kbd "C-x C-f") 'helm-find-files)
+;; ;; (define-key global-map (kbd "C-x C-r") 'helm-recentf)
+;; ;; (define-key global-map (kbd "M-y")     'helm-show-kill-ring)
+;; ;; (define-key global-map (kbd "C-c i")   'helm-imenu)
+;; (define-key global-map (kbd "C-x b")   'helm-buffers-list)
+;; --- old end ---
 
 ;; w32-ime-buffer-switch-p を t にして helm を利用する場合に、ミニバッファで漢字を正常に
 ;; 使えるようにする対策（この設定がないと、ime が勝手に切り替わったりする）
@@ -966,55 +1025,141 @@ mouse-3: delete other windows"
 ;; indent-guide
 (indent-guide-global-mode)
 
+
+;; ------------------------------------------------------------------------------
+;; google-translate.el
+;; (require 'google-translate)
+
+;; キーバインドの設定（お好みで）
+(global-set-key [(C x) (C t)] 'google-translate-at-point)
+
+;; 翻訳のデフォルト値を設定（en -> ja）
+(custom-set-variables
+  '(google-translate-default-source-language "en")
+  '(google-translate-default-target-language "ja"))
+
+;; ------------------------------------------------------------------------------
+;; popwin.el 使い方が全くわからん。。。設定してもしなくても同じ挙動になる。
+(require 'popwin)
+;; (popwin-mode nil)
+;; (setq display-buffer-alist 'popwin:display-buffer)
+(setq display-buffer-function 'popwin:display-buffer)
+(setq popwin:popup-window-position 'bottom)
+(push '("*helm" :regexp t :position bottom) popwin:special-display-config)
+
+;; direx
+(push '(direx:direx-mode :position left :width 50 :dedicated t) popwin:special-display-config)
+;; google-translate.elの翻訳バッファをポップアップで表示させる
+(push '("*Google Translate*") popwin:special-display-config)
+
+
+;; ------------------------------------------------------------------------------
 ;; フレームサイズを記憶する。
 ;;
-(if window-system (progn
-                    (defun my-window-size-save ()
-                      (let* ((rlist (frame-parameters (selected-frame)))
-                             (ilist initial-frame-alist)
-                             (nCHeight (frame-height))
-                             (nCWidth (frame-width))
-                             (tMargin (if (integerp (cdr (assoc 'top rlist)))
-                                          (cdr (assoc 'top rlist)) 0))
-                             (lMargin (if (integerp (cdr (assoc 'left rlist)))
-                                          (cdr (assoc 'left rlist)) 0))
-                             buf
-                             (file "~/.emacs.d/.framesize.el"))
-                        (if (get-file-buffer (expand-file-name file))
-                            (setq buf (get-file-buffer (expand-file-name file)))
-                          (setq buf (find-file-noselect file)))
-                        (set-buffer buf)
-                        (erase-buffer)
-                        (insert (concat
-                                 ;; 初期値をいじるよりも modify-frame-parameters
-                                 ;; で変えるだけの方がいい?
-                                 "(delete 'width initial-frame-alist)\n"
-                                 "(delete 'height initial-frame-alist)\n"
-                                 "(delete 'top initial-frame-alist)\n"
-                                 "(delete 'left initial-frame-alist)\n"
-                                 "(setq initial-frame-alist (append (list\n"
-                                 "'(width . " (int-to-string nCWidth) ")\n"
-                                 "'(height . " (int-to-string nCHeight) ")\n"
-                                 "'(top . " (int-to-string tMargin) ")\n"
-                                 "'(left . " (int-to-string lMargin) "))\n"
-                                 "initial-frame-alist))\n"
-                                 ;;"(setq default-frame-alist initial-frame-alist)"
-                                 ))
-                        (save-buffer)
-                        ))
+;; (if window-system (progn
+;;                     (defun my-window-size-save ()
+;;                       (let* ((rlist (frame-parameters (selected-frame)))
+;;                              (ilist initial-frame-alist)
+;;                              (nCHeight (frame-height))
+;;                              (nCWidth (frame-width))
+;;                              (tMargin (if (integerp (cdr (assoc 'top rlist)))
+;;                                           (cdr (assoc 'top rlist)) 0))
+;;                              (lMargin (if (integerp (cdr (assoc 'left rlist)))
+;;                                           (cdr (assoc 'left rlist)) 0))
+;;                              buf
+;;                              (file "~/.emacs.d/.framesize.el"))
+;;                         (if (get-file-buffer (expand-file-name file))
+;;                             (setq buf (get-file-buffer (expand-file-name file)))
+;;                           (setq buf (find-file-noselect file)))
+;;                         (set-buffer buf)
+;;                         (erase-buffer)
+;;                         (insert (concat
+;;                                  ;; 初期値をいじるよりも modify-frame-parameters
+;;                                  ;; で変えるだけの方がいい?
+;;                                  "(delete 'width initial-frame-alist)\n"
+;;                                  "(delete 'height initial-frame-alist)\n"
+;;                                  "(delete 'top initial-frame-alist)\n"
+;;                                  "(delete 'left initial-frame-alist)\n"
+;;                                  "(setq initial-frame-alist (append (list\n"
+;;                                  "'(width . " (int-to-string nCWidth) ")\n"
+;;                                  "'(height . " (int-to-string nCHeight) ")\n"
+;;                                  "'(top . " (int-to-string tMargin) ")\n"
+;;                                  "'(left . " (int-to-string lMargin) "))\n"
+;;                                  "initial-frame-alist))\n"
+;;                                  ;;"(setq default-frame-alist initial-frame-alist)"
+;;                                  ))
+;;                         (save-buffer)
+;;                         ))
 
-                    (defun my-window-size-load ()
-                      (let* ((file "~/.emacs.d/.framesize.el"))
-                        (if (file-exists-p file)
-                            (load file))))
+;;                     (defun my-window-size-load ()
+;;                       (let* ((file "~/.emacs.d/.framesize.el"))
+;;                         (if (file-exists-p file)
+;;                             (load file))))
 
-                    (my-window-size-load)
+;;                     (my-window-size-load)
 
-                    ;; Call the function above at C-x C-c.
-                    (defadvice save-buffers-kill-emacs
-                      (before save-frame-size activate)
-                      (my-window-size-save))
-                    ))
+;;                     ;; Call the function above at C-x C-c.
+;;                     (defadvice save-buffers-kill-emacs
+;;                       (before save-frame-size activate)
+;;                       (my-window-size-save))
+;;                     ))
+
+;;
+;; 参考: http://d.hatena.ne.jp/Tan90909090/20121124/1353757368
+;;
+(defconst my-save-frame-file
+  "~/.emacs.d/.framesize"
+  "フレームの位置、大きさを保存するファイルのパス")
+(defun my-save-frame-size()
+  "現在のフレームの位置、大きさを`my-save-frame-file'に保存します"
+  (interactive)
+  (let* ((param (frame-parameters (selected-frame)))
+         (current-height (frame-height))
+         (current-width (frame-width))
+         (current-top-margin (if (integerp (cdr (assoc 'top param)))
+                                 (cdr (assoc 'top param))
+                                 0))
+         (current-left-margin (if (integerp (cdr (assoc 'left param)))
+                                  (cdr (assoc 'left param))
+                                  0))
+         (buf nil)
+         (file my-save-frame-file)
+         )
+    ;; ファイルと関連付けられたバッファ作成
+    (unless (setq buf (get-file-buffer (expand-file-name file)))
+      (setq buf (find-file-noselect (expand-file-name file))))
+    (set-buffer buf)
+    (erase-buffer)
+    ;; ファイル読み込み時に直接評価させる内容を記述
+    (insert
+     (concat
+      "(set-frame-size (selected-frame) "(int-to-string current-width)" "(int-to-string current-height)")\n"
+      "(set-frame-position (selected-frame) "(int-to-string current-left-margin)" "(int-to-string current-top-margin)")\n"
+      ))
+    (save-buffer)))
+(defun my-load-frame-size()
+  "`my-save-frame-file'に保存されたフレームの位置、大きさを復元します"
+  (interactive)
+  (let ((file my-save-frame-file))
+    (when (file-exists-p file)
+        (load-file file))))
+
+(add-hook 'emacs-startup-hook 'my-load-frame-size)
+(add-hook 'kill-emacs-hook 'my-save-frame-size)
+(run-with-idle-timer 60 t 'my-save-frame-size)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ; 起動時に自動で前回の状態になる !!この行はファイル末尾に記載すること!!
